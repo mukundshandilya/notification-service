@@ -1,0 +1,41 @@
+name: Slack Notification
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+  issues: {}
+  issue_comment: {}
+  release: {}
+  create: {}
+  delete: {}
+  fork: {}
+  watch: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        run: |
+          MESSAGE="🔥 GitHub Event\n\n          Repository: ${{ github.repository }}\n          Actor: ${{ github.actor }}\n          Event: ${{ github.event_name }}\n          Ref: ${{ github.ref }}"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            MESSAGE="$MESSAGE\nCommit: ${{ github.event.head_commit.message }}"
+          fi
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            MESSAGE="$MESSAGE\nPR: ${{ github.event.pull_request.title }}\nURL: ${{ github.event.pull_request.html_url }}"
+          fi
+
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            MESSAGE="$MESSAGE\nIssue: ${{ github.event.issue.title }}\nURL: ${{ github.event.issue.html_url }}"
+          fi
+
+          if [ "${{ github.event_name }}" = "release" ]; then
+            MESSAGE="$MESSAGE\nRelease: ${{ github.event.release.tag_name }}\nURL: ${{ github.event.release.html_url }}"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+          --data "{\"text\":\"$MESSAGE\"}" \
+          "${{ secrets.SLACK_WEBHOOK_URL }}"
