@@ -23,7 +23,7 @@ public class TestRunner {
 		NotificationTask task11 = new NotificationTask("MSG - 11");
 		NotificationTask task12 = new NotificationTask("MSG - 12");
 
-		worker.submit(task1);
+//		worker.submit(task1);
 		worker.submit(task1); // duplicate task, should be ignored
 		worker.submit(task2);
 		worker.submit(task3);
@@ -37,6 +37,11 @@ public class TestRunner {
 		worker.submit(task10);
 		worker.submit(task11);
 		worker.submit(task12);
+
+		// Race condition test: submit the same task multiple times in quick succession
+		for (int i = 0; i < 5; i++) {
+			worker.submit(task1);
+		}
 
 		worker.shutdown();
 	}

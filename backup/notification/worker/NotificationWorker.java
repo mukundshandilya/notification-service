@@ -10,8 +10,9 @@ import notification.model.NotificationTask;
 
 public class NotificationWorker {
 
-	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+	private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
 	private final Set<String> processedTasks = ConcurrentHashMap.newKeySet();
+	private final Set<String> processingTasks = ConcurrentHashMap.newKeySet();
 
 	public void submit(NotificationTask task) {
 		executor.submit(() -> process(task));
@@ -19,8 +20,15 @@ public class NotificationWorker {
 
 	private void process(NotificationTask task) {
 
-		if (processedTasks.contains(task.getTaskId())) {
-			System.out.println("Already processed: " + task.getMessage() + " | TaskId=" + task.getTaskId());
+//		if (processedTasks.contains(task.getTaskId())) {
+//			System.out.println("Already processed: " + task.getMessage() + " | TaskId=" + task.getTaskId());
+//			return;
+//		}
+
+		boolean isNew = processingTasks.add(task.getTaskId());
+
+		if (!isNew) {
+			System.out.println("SKIPPED DUPLICATE: " + task.getTaskId());
 			return;
 		}
 
@@ -31,11 +39,13 @@ public class NotificationWorker {
 
 			send(task);
 
-			System.out.println("SUCCESS: " + task.getMessage());
+			System.out.println("SUCCESS: " + task.getMessage() + " | TaskId=" + task.getTaskId() + " | Thread="
+					+ Thread.currentThread().getName());
 			processedTasks.add(task.getTaskId());
 
 		} catch (Exception e) {
 			System.out.println("FAILED: " + task.getMessage() + " | reason: " + e.getMessage());
+			processingTasks.remove(task.getTaskId());
 			handleFailure(task);
 		}
 	}
@@ -58,6 +68,7 @@ public class NotificationWorker {
 	private void moveToDLQ(NotificationTask task) {
 		System.out.println("DLQ: " + task.getMessage());
 		task.setRetryCount(0); // reset retry count for potential future processing
+		processingTasks.remove(task.getTaskId());
 		handleFailure(task);
 	}
 
