@@ -1,6 +1,7 @@
 package com.notification.controller;
 
 import com.notification.dto.NotificationRequest;
+import com.notification.model.Notification;
 import com.notification.service.NotificationService;
 
 import org.springframework.web.bind.annotation.*;
@@ -9,17 +10,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-    private final NotificationService notificationService;
+    private final NotificationService service;
 
     public NotificationController(
-            NotificationService notificationService) {
-        this.notificationService = notificationService;
+            NotificationService service) {
+
+        this.service = service;
     }
 
     @PostMapping
-    public String sendNotification(
+    public Notification createNotification(
             @RequestBody NotificationRequest request) {
 
-        return notificationService.sendNotification();
+        return service.createNotification(request);
+    }
+
+    @GetMapping("/{id}")
+    public Notification getNotification(
+            @PathVariable Long id) {
+
+        return service.getNotification(id);
     }
 }
