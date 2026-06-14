@@ -2,12 +2,13 @@ package com.notification;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import java.util.*;
 
 @SpringBootApplication
 public class NotificationApplication {
 
     public static void main(String[] args) {
-        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Kolkata"));
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
         SpringApplication.run(NotificationApplication.class, args);
     }
 }

@@ -6,6 +6,7 @@ import com.notification.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import com.notification.exception.NotificationNotFoundException;
 
 @Service
 public class NotificationService {
@@ -37,6 +38,10 @@ public class NotificationService {
 
     public Notification getNotification(Long id) {
         Optional<Notification> optionalEntity = repository.findById(id);
+
+        if (optionalEntity.isEmpty()) {
+            throw new NotificationNotFoundException("Notification not found");
+        }
         Notification result = optionalEntity.get();
         return result;
     }
