@@ -4,13 +4,14 @@ import com.notification.dto.NotificationRequest;
 import com.notification.model.Notification;
 import com.notification.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class NotificationService {
 
     private final NotificationRepository repository;
 
-    private Long counter = 1L;
 
     public NotificationService(
             NotificationRepository repository) {
@@ -23,9 +24,10 @@ public class NotificationService {
 
         Notification notification =
                 new Notification(
-                        counter++,
                         request.getRecipient(),
-                        request.getMessage()
+                        request.getMessage(),
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
                 );
 
         repository.save(notification);
@@ -34,6 +36,8 @@ public class NotificationService {
     }
 
     public Notification getNotification(Long id) {
-        return repository.findById(id);
+        Optional<Notification> optionalEntity = repository.findById(id);
+        Notification result = optionalEntity.get();
+        return result;
     }
 }
