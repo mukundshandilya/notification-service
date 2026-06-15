@@ -3,6 +3,7 @@ package com.notification.controller;
 import com.notification.dto.NotificationRequest;
 import com.notification.model.Notification;
 import com.notification.service.NotificationService;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class NotificationController {
 
     @PostMapping
     public Notification createNotification(
-            @RequestBody NotificationRequest request) {
+            @RequestBody @Valid NotificationRequest request) {
 
         return service.createNotification(request);
     }
