@@ -25,4 +25,12 @@ public class NotificationRequest {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "NotificationRequest{" +
+                "recipient='" + recipient + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
